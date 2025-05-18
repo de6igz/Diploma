@@ -1,0 +1,208 @@
+basePath: /
+definitions:
+  handlers.loginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  handlers.loginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  handlers.refreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  handlers.refreshResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  handlers.registerRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  handlers.sdkTokenResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: Пример Auth Service с Echo, PostgreSQL, Redis и Swagger
+  title: Auth Service API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: health
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Health
+      tags:
+      - Auth
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Логин пользователя и выдача access/refresh токенов
+      parameters:
+      - description: Логин данные
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.loginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Логин
+      tags:
+      - Auth
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: Получить инфу о себе
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Получить инфу о себе
+      tags:
+      - Auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет access/refresh токены
+      parameters:
+      - description: Refresh данные
+        in: body
+        name: refreshRequest
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.refreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.refreshResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновление токена
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя
+      parameters:
+      - description: Регистрационные данные
+        in: body
+        name: registerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Регистрация
+      tags:
+      - Auth
+  /sdk-token:
+    post:
+      consumes:
+      - application/json
+      description: Получается токен для работы SDK
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.sdkTokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение токена для SDK
+      tags:
+      - Auth
+  /secure:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает секретные данные, если токен валиден
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Secure data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+      summary: Пример защищённого эндпоинта
+      tags:
+      - Auth
+  /validate:
+    get:
+      description: Проверяет валидность access токена. Возвращает X-User-Id при успехе
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      summary: Валидация токена (Nginx Auth)
+      tags:
+      - Auth
+swagger: "2.0"

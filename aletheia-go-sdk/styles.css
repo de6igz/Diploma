@@ -1,0 +1,185 @@
+/* Общие стили и сброс */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Кнопки */
+.btn {
+    cursor: pointer;
+    padding: 8px 16px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #3c3c3c;
+    color: #fff;
+    font-size: 14px;
+}
+
+.btn--secondary {
+    background-color: #666;
+}
+
+/* Шапка */
+.header {
+    background-color: #fff;
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.header__top {
+    flex: 1 1 100%;
+    margin-bottom: 8px;
+}
+
+.header__title {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.header__subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.header__info {
+    margin-right: 16px;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Основной контент */
+.main-content {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 24px;
+}
+
+/* Секция Alert Thresholds */
+.alert-thresholds {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    height: fit-content;
+}
+
+.section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.circle-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.circle-rating__inner {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4caf50, #81c784);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-rating__value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.circle-rating__label {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Секция диаграммы */
+.chart-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-section__header {
+    margin-bottom: 16px;
+}
+
+.chart-section__title {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    height: 200px;
+    gap: 8px;
+}
+
+.chart-bars__bar {
+    width: 20px;
+    background-color: #3c3c3c;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.3s;
+}
+
+.chart-bars__bar:hover {
+    background-color: #555;
+}
+
+/* Блок с иконками (нижняя часть) */
+.features-grid {
+    grid-column: 1 / -1; /* Занять всю ширину сетки */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.feature-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.feature-card__icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    /* Можно заменить на иконки Font Awesome или другие */
+}
+
+.feature-card__title {
+    font-size: 14px;
+    color: #444;
+}
+
+/* Адаптивность для экран

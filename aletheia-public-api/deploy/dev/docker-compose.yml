@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: aletheia
+      POSTGRES_PASSWORD: hzYGrZiZP9VHHdVniHyO
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    networks:
+      - aletheia_network
+
+  timescale:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescale
+    environment:
+      POSTGRES_USER: aletheia
+      POSTGRES_PASSWORD: eCJpU3B91QOIrKafCd5m
+      POSTGRES_DB: testdb_timescale
+    ports:
+      - "5433:5432"  # допустим, мапим внешний порт 5433, внутри контейнера 5432
+    networks:
+      - aletheia_network
+
+
+
+
+networks:
+  aletheia_network:
+    external: true

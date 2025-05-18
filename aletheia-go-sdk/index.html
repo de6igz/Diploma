@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>System Performance - Overview</title>
+    <!-- Подключение файла со стилями -->
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Шапка (Header) -->
+<header class="header">
+    <div class="header__top">
+        <h1 class="header__title">System Performance - Overview</h1>
+        <p class="header__subtitle">Monitoring highload system resources</p>
+    </div>
+    <div class="header__actions">
+        <span class="header__info">All Systems</span>
+        <span class="header__info">Active alerts: 10</span>
+        <button class="btn">View</button>
+        <button class="btn btn--secondary">Configure</button>
+    </div>
+</header>
+
+<!-- Основной контент -->
+<main class="main-content">
+
+    <!-- Блок Alert Thresholds + круговой рейтинг -->
+    <section class="alert-thresholds">
+        <h2 class="section-title">Alert Thresholds</h2>
+        <div class="circle-rating">
+            <div class="circle-rating__inner">
+                <span class="circle-rating__value">9.2/10</span>
+            </div>
+            <p class="circle-rating__label">System Rating</p>
+        </div>
+    </section>
+
+    <!-- Блок с диаграммой (CPU Usage) -->
+    <section class="chart-section">
+        <div class="chart-section__header">
+            <h3 class="chart-section__title">CPU Usage</h3>
+            <!-- При желании можно добавить легенду или фильтры -->
+        </div>
+        <div class="chart-bars">
+            <!-- Пример столбиков, значения высоты условные -->
+            <div class="chart-bars__bar" style="height: 50%;" title="50%"></div>
+            <div class="chart-bars__bar" style="height: 65%;" title="65%"></div>
+            <div class="chart-bars__bar" style="height: 80%;" title="80%"></div>
+            <div class="chart-bars__bar" style="height: 40%;" title="40%"></div>
+            <div class="chart-bars__bar" style="height: 90%;" title="90%"></div>
+            <div class="chart-bars__bar" style="height: 75%;" title="75%"></div>
+            <div class="chart-bars__bar" style="height: 55%;" title="55%"></div>
+            <div class="chart-bars__bar" style="height: 95%;" title="95%"></div>
+        </div>
+    </section>
+
+    <!-- Блок с иконками и описанием функционала -->
+    <section class="features-grid">
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Performance Metrics</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Security Checks</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Incident Response</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Resource Allocation</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Capacity Planning</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Performance Recognition</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">Risk Assessment</h4>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card__icon">[icon]</div>
+            <h4 class="feature-card__title">System Connectivity</h4>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

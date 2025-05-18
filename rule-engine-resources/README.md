@@ -1,0 +1,1 @@
+MONGO_DB=rule_engine_db;MONGO_HOST=localhost:27017;MONGO_PASSWORD=password;MONGO_USER=admin

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rule Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .node, .condition {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .condition {
+      border-style: dashed;
+      background-color: #f9f9f9;
+    }
+    .node input, .node select, .condition input, .condition select {
+      margin: 5px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 5px 2px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Rule Generator</h2>
+  <div id="rootNode" class="node">
+    <label>Operator:</label>
+    <select class="operator">
+      <option value="AND">AND</option>
+      <option value="OR">OR</option>
+    </select>
+    <button class="btn" onclick="addCondition('rootNode')">Добавить Условие</button>
+    <button class="btn" onclick="addChildNode('rootNode')">Добавить Дочерний Узел</button>
+  </div>
+  <h3>Действия</h3>
+  <div id="actions">
+    <button class="btn" onclick="addAction()">Добавить Действие</button>
+  </div>
+  <button class="btn" onclick="generateJSON()">Сгенерировать JSON</button>
+  <pre id="output"></pre>
+</div>
+
+<script>
+  // Функция для добавления дочернего узла
+  function addChildNode(parentId) {
+    const parent = document.getElementById(parentId);
+    const nodeId = `node-${Math.random().toString(36).substr(2, 9)}`;
+    const childNode = document.createElement("div");
+    childNode.classList.add("node");
+    childNode.id = nodeId;
+    childNode.innerHTML = `
+                <label>Operator:</label>
+                <select class="operator">
+                    <option value="AND">AND</option>
+                    <option value="OR">OR</option>
+                </select>
+                <button class="btn" onclick="addCondition('${nodeId}')">Добавить Условие</button>
+                <button class="btn" onclick="addChildNode('${nodeId}')">Добавить Дочерний Узел</button>
+                <button class="btn" onclick="this.parentElement.remove()">Удалить Узел</button>
+            `;
+    parent.appendChild(childNode);
+  }
+
+  // Функция для добавления действия
+  function addAction() {
+    const actionsDiv = document.getElementById("actions");
+    const action = document.createElement("div");
+    action.classList.add("node");
+    action.innerHTML = `
+                <input type="text" placeholder="Тип Действия" class="action-type">
+                <input type="text" placeholder="Ключ Параметра" class="param-key">
+                <input type="text" placeholder="Значение Параметра" class="param-value">
+                <button class="btn" onclick="this.parentElement.remove()">Удалить Действие</button>
+            `;
+    actionsDiv.appendChild(action);
+  }
+
+  // Функция для добавления условия
+  function addCondition(parentId) {
+    const parent = document.getElementById(parentId);
+    const condition = document.createElement("div");
+    condition.classList.add("condition");
+    condition.innerHTML = `
+                <input type="text" placeholder="Поле" class="field">
+                <select class="operator">
+                    <option value="eq">=</option>
+                    <option value="neq">!=</option>
+                    <option value="gt">></option>
+                    <option value="lt"><</option>
+                    <option value="repeat_over">repeat_over</option>
+                </select>
+                <input type="text" placeholder="Значение" class="value">
+                <div class="repeat-over" style="display: none;">
+                    <input type="number" placeholder="Порог" class="threshold">
+                    <input type="number" placeholder="Минуты" class="minutes">
+                </div>
+                <button class="btn" onclick="this.parentElement.remove()">Удалить Условие</button>
+            `;
+    parent.appendChild(condition);
+    // Обработчик изменения оператора для отображения дополнительных полей
+    condition.querySelector('.operator').addEventListener('change', function() {
+      const repeatOverDiv = condition.querySelector('.repeat-over');
+      if (this.value === 'repeat_over') {
+        repeatOverDiv.style.display = 'block';
+      } else {
+        repeatOverDiv.style.display = 'none';
+      }
+    });
+  }
+
+  // Функция для построения дерева правил
+  function buildTree(node) {
+    const operatorSelect = node.querySelector(":scope > .operator");
+    const operator = operatorSelect ? operatorSelect.value : "OR";
+
+    const conditions = [];
+    const children = [];
+
+    Array.from(node.children).forEach(child => {
+      if (child.classList.contains("condition")) {
+        const field = child.querySelector(".field").value.trim();
+        const operator = child.querySelector(".operator").value;
+        let value = child.querySelector(".value").value.trim();
+        if (operator === "repeat_over") {
+          const threshold = parseInt(child.querySelector(".threshold").value, 10);
+          const minutes = parseInt(child.querySelector(".minutes").value, 10);
+          value = {
+            threshold: isNaN(threshold) ? 0 : threshold,
+            minutes: isNaN(minutes) ? 0 : minutes
+          };
+        }
+        if (field && operator && value !== "") { // Проверка на заполненность полей
+          conditions.push({ field, operator, value });
+        }
+      } else if (child.classList.contains("node")) {
+        children.push(buildTree(child));
+      }
+    });
+
+    return { operator, conditions, children };
+  }
+
+  // Функция для генерации JSON
+  function generateJSON() {
+    const rootNode = document.getElementById("rootNode");
+    const actions = [...document.getElementsByClassName("action-type")].map(input => {
+      const paramKey = input.nextElementSibling ? input.nextElementSibling.value : "";
+      const paramValue = input.nextElementSibling.nextElementSibling ? input.nextElementSibling.nextElementSibling.value : "";
+      return {
+        type: input.value,
+        params: {
+          key: paramKey,
+          value: paramValue
+        }
+      };
+    }).filter(action => action.type.trim() !== ""); // Фильтрация пустых действий
+
+    const json = { root_node: buildTree(rootNode), actions };
+    document.getElementById("output").textContent = JSON.stringify(json, null, 4);
+  }
+</script>
+</body>
+</html>

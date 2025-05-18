@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rule Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 5px;
+        }
+
+        /* Общие стили для полей ввода */
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            max-width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin: 5px 0;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn:active {
+            background-color: #00408d;
+        }
+
+        /* Стили узлов и условий */
+        .node {
+            border: 1px solid #dfe3e8;
+            background-color: #fafbfc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .node:not(#rootNode) {
+            margin-left: 30px; /* Немного отступаем дочерние узлы */
+        }
+
+        .condition {
+            border: 1px dashed #ccc;
+            background-color: #fff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .repeat-over {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions-container .node {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Вывод JSON */
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Заголовок -->
+    <h1>Создать новое правило</h1>
+
+    <!-- Основная информация о правиле -->
+    <div class="section">
+        <label>Название правила</label>
+        <input type="text" placeholder="Введите название правила (пример: Monitoring Rule)" />
+
+        <label>Описание правила</label>
+        <textarea placeholder="Краткое описание правила"></textarea>
+    </div>
+
+    <!-- Условия -->
+    <div class="section">
+        <h2>Условия</h2>
+        <p style="margin-bottom: 10px;">
+            Настройте условия с помощью оператора <b>AND</b> или <b>OR</b>.
+            Вы можете добавлять дочерние узлы для более сложной логики.
+        </p>
+
+        <!-- Корневой узел -->
+        <div id="rootNode" class="node">
+            <label>Логический оператор:</label>
+            <select class="operator">
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+            </select>
+            <div style="margin-top: 10px;">
+                <button class="btn" onclick="addCondition('rootNode')">Добавить Условие</button>
+                <button class="btn" onclick="addChildNode('rootNode')">Добавить Дочерний Узел</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Действия -->
+    <div class="section actions-container">
+        <h2>Действия</h2>
+        <p style="margin-bottom: 10px;">Укажите, какие действия выполнять при выполнении условий.</p>
+
+        <button class="btn" onclick="addAction()">Добавить Действие</button>
+        <div id="actions"></div>
+    </div>
+
+    <!-- Настройки правила -->
+    <div class="section">
+        <h2>Настройки правила</h2>
+        <label>Приоритет</label>
+        <select>
+            <option value="low">Низкий</option>
+            <option value="medium" selected>Средний</option>
+            <option value="high">Высокий</option>
+        </select>
+
+        <label>Статус</label>
+        <select>
+            <option value="active" selected>Активно</option>
+            <option value="inactive">Неактивно</option>
+        </select>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div class="buttons">
+        <button class="btn" onclick="generateJSON()">Сгенерировать JSON</button>
+        <button class="btn" onclick="alert('Правило сохранено!')">Сохранить правило</button>
+        <button class="btn" onclick="alert('Отменено!')">Отменить</button>
+    </div>
+
+    <!-- Вывод JSON -->
+    <div class="section">
+        <pre id="output"></pre>
+    </div>
+</div>
+
+<script>
+    // ===== ЛОГИКА РАБОТЫ (идентична исходному коду) =====
+
+    // Функция для добавления дочернего узла
+    function addChildNode(parentId) {
+        const parent = document.getElementById(parentId);
+        const nodeId = `node-${Math.random().toString(36).substr(2, 9)}`;
+        const childNode = document.createElement("div");
+        childNode.classList.add("node");
+        childNode.id = nodeId;
+        childNode.innerHTML = `
+      <label>Логический оператор:</label>
+      <select class="operator">
+        <option value="AND">AND</option>
+        <option value="OR">OR</option>
+      </select>
+      <div style="margin-top: 10px;">
+        <button class="btn" onclick="addCondition('${nodeId}')">Добавить Условие</button>
+        <button class="btn" onclick="addChildNode('${nodeId}')">Добавить Дочерний Узел</button>
+        <button class="btn" style="background-color:#dc3545;" onclick="this.parentElement.parentElement.remove()">Удалить Узел</button>
+      </div>
+    `;
+        parent.appendChild(childNode);
+    }
+
+    // Функция для добавления условия
+    function addCondition(parentId) {
+        const parent = document.getElementById(parentId);
+        const condition = document.createElement("div");
+        condition.classList.add("condition");
+        condition.innerHTML = `
+      <label>Поле:</label>
+      <input type="text" placeholder="Поле (например, node_name)" class="field" />
+
+      <label>Оператор:</label>
+      <select class="operator">
+        <option value="eq">=</option>
+        <option value="neq">!=</option>
+        <option value="gt">></option>
+        <option value="lt"><</option>
+        <option value="repeat_over">repeat_over</option>
+      </select>
+
+      <label>Значение:</label>
+      <input type="text" placeholder="Значение" class="value" />
+
+      <!-- Блок для repeat_over -->
+      <div class="repeat-over" style="display: none;">
+        <input type="number" placeholder="Порог (threshold)" class="threshold" />
+        <input type="number" placeholder="Минуты (minutes)" class="minutes" />
+      </div>
+
+      <button class="btn" style="background-color:#dc3545;" onclick="this.parentElement.remove()">Удалить Условие</button>
+    `;
+
+        parent.appendChild(condition);
+
+        // При смене оператора показываем/скрываем блок repeat_over
+        condition.querySelector('.operator').addEventListener('change', function() {
+            const repeatOverDiv = condition.querySelector('.repeat-over');
+            if (this.value === 'repeat_over') {
+                repeatOverDiv.style.display = 'flex';
+            } else {
+                repeatOverDiv.style.display = 'none';
+            }
+        });
+    }
+
+    // Функция для добавления действия
+    function addAction() {
+        const actionsDiv = document.getElementById("actions");
+        const action = document.createElement("div");
+        action.classList.add("node");
+        action.innerHTML = `
+      <label>Тип Действия:</label>
+      <input type="text" placeholder="Например: TELEGRAM" class="action-type" />
+
+      <label>Ключ Параметра:</label>
+      <input type="text" placeholder="Например: chat_id" class="param-key" />
+
+      <label>Значение Параметра:</label>
+      <input type="text" placeholder="Например: 123456" class="param-value" />
+
+      <button class="btn" style="background-color:#dc3545;" onclick="this.parentElement.remove()">Удалить Действие</button>
+    `;
+        actionsDiv.appendChild(action);
+    }
+
+    // Рекурсивная функция для построения дерева правил
+    function buildTree(node) {
+        const operatorSelect = node.querySelector(":scope > .operator");
+        const operator = operatorSelect ? operatorSelect.value : "OR";
+
+        const conditions = [];
+        const children = [];
+
+        Array.from(node.children).forEach(child => {
+            if (child.classList.contains("condition")) {
+                const field = child.querySelector(".field").value.trim();
+                const op = child.querySelector(".operator").value;
+                let value = child.querySelector(".value").value.trim();
+
+                if (op === "repeat_over") {
+                    const threshold = parseInt(child.querySelector(".threshold").value, 10);
+                    const minutes = parseInt(child.querySelector(".minutes").value, 10);
+                    value = {
+                        threshold: isNaN(threshold) ? 0 : threshold,
+                        minutes: isNaN(minutes) ? 0 : minutes
+                    };
+                }
+
+                if (field && op && value !== "") {
+                    conditions.push({ field, operator: op, value });
+                }
+            } else if (child.classList.contains("node")) {
+                // Дочерний узел
+                children.push(buildTree(child));
+            }
+        });
+
+        return { operator, conditions, children };
+    }
+
+    // Функция для генерации JSON
+    function generateJSON() {
+        const rootNode = document.getElementById("rootNode");
+        // Собираем действия
+        const actions = [...document.getElementsByClassName("action-type")].map(input => {
+            const paramKey = input.nextElementSibling
+                ? input.nextElementSibling.value
+                : "";
+            const paramValue = input.nextElementSibling &&
+            input.nextElementSibling.nextElementSibling
+                ? input.nextElementSibling.nextElementSibling.value
+                : "";
+
+            return {
+                type: input.value,
+                params: {
+                    key: paramKey,
+                    value: paramValue
+                }
+            };
+        }).filter(action => action.type.trim() !== "");
+
+        // Собираем дерево условий
+        const json = {
+            root_node: buildTree(rootNode),
+            actions
+        };
+
+        // Выводим результат
+        document.getElementById("output").textContent = JSON.stringify(json, null, 4);
+    }
+</script>
+</body>
+</html>

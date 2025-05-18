@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  auth_service:
+#    image: registry.gitlab.com/diploma1361301/auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth_service
+    environment:
+      - PGHOST=147.45.149.30
+      - PGPORT=5432
+      - PGUSER=aletheia
+      - PGPASSWORD=hzYGrZiZP9VHHdVniHyO
+      - PGDB=testdb
+
+      - REDISHOST=redis
+      - REDISPORT=6379
+      - REDISPASSWORD=redis-test
+
+      - JWTSECRET=SUPER_SECRET_KEY
+      - ACCESS_TOKEN_FRONT_TTL=99999m
+      - ACCESS_TOKEN_SDK_TTL=240h
+      - REFRESH_TOKEN_TTL=168h
+
+      - PORT=8082
+    ports:
+      - "8082:8082"
+    networks:
+      - aletheia_network
+
+
+
+networks:
+  aletheia_network:
+    external: true

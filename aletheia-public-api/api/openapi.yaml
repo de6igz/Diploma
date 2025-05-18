@@ -1,0 +1,880 @@
+openapi: 3.0.0
+info:
+    title: Event & Project Service API
+    description: API для получения событий, данных пользователя, проектов и правил
+    version: v1.0.0
+servers:
+    - url: http://localhost
+      description: local
+paths:
+    /v1/event:
+        get:
+            tags:
+                - Events
+            summary: Получить детали события
+            description: Возвращает подробную информацию о событии по его ID
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: query
+                  name: eventId
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseEventsGetEventByID'
+    /v1/event/recent:
+        get:
+            tags:
+                - Events
+            summary: Получить детали самого свежего события
+            description: Возвращает подробную информацию о последнем событии по его eventType
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: query
+                  name: eventType
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseEventsGetMostRecentEvent'
+    /v1/events:
+        get:
+            tags:
+                - Events
+            summary: Получить события за последние часы
+            description: Возвращает список событий за указанный промежуток времени (параметр pastHours)
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: query
+                  name: pastHours
+                  schema:
+                    type: number
+                    format: int
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseEventsGetEvents'
+    /v1/events_by_event_type:
+        get:
+            tags:
+                - Events
+            summary: Получить события по типу ивента
+            description: Возвращает инфу об ивентах по типу
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: query
+                  name: eventType
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseEventsGetEventsByType'
+    /v1/me:
+        get:
+            tags:
+                - App
+            summary: Получить данные о пользователе
+            description: Возвращает информацию о текущем пользователе
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseAppGetMe'
+    /v1/project/{projectID}:
+        get:
+            tags:
+                - Projects
+            summary: Получить детали проекта
+            description: Возвращает подробную информацию о проекте по его ID
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: path
+                  name: projectID
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseProjectsGetProjectByID'
+        put:
+            tags:
+                - Projects
+            summary: ' Обновить проект'
+            description: Обновить проект
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: path
+                  name: projectID
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/requestProjectsUpdateProject'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseProjectsUpdateProject'
+        delete:
+            tags:
+                - Projects
+            summary: Удалить проект по Id
+            description: Удалить проект по Id
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: path
+                  name: projectID
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseProjectsDeleteProjectByID'
+    /v1/project/create:
+        post:
+            tags:
+                - Projects
+            summary: Создать проект
+            description: Создать новый проект
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/requestProjectsCreateProject'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseProjectsCreateProject'
+    /v1/projects:
+        get:
+            tags:
+                - Projects
+            summary: Получить проекты
+            description: Возвращает список проектов
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseProjectsGetProjects'
+    /v1/rule/byId:
+        get:
+            tags:
+                - Rules
+            summary: Получить детали правила
+            description: Возвращает подробную информацию о правиле по его ID
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+                - in: query
+                  name: ruleId
+                  schema:
+                    type: string
+                - in: query
+                  name: ruleType
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesGetRuleByID'
+    /v1/rules:
+        get:
+            tags:
+                - Rules
+            summary: Получить правила
+            description: Возвращает список правил
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesGetRules'
+        delete:
+            tags:
+                - Rules
+            summary: Удалить правило по id
+            description: Удалить правило по id
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/requestRulesDeleteRuleByID'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesDeleteRuleByID'
+    /v1/rules/available:
+        get:
+            tags:
+                - Rules
+            summary: Получить свободные правила
+            description: Возвращает подробную информацию о правиле по его ID
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesGetAvailableRules'
+    /v1/rules/create:
+        post:
+            tags:
+                - Rules
+            summary: Создать правило
+            description: Создать правило
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/requestRulesCreateRule'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesCreateRule'
+    /v1/rules/update:
+        put:
+            tags:
+                - Rules
+            summary: Обновить правило
+            description: Обновить правило
+            parameters:
+                - in: header
+                  name: X-User-Id
+                  required: true
+                  schema:
+                    type: number
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/requestRulesUpdateRuleById'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/responseRulesUpdateRuleById'
+components:
+    schemas:
+        requestAppGetMe:
+            type: object
+        requestEventsGetEventByID:
+            type: object
+        requestEventsGetEvents:
+            type: object
+        requestEventsGetEventsByType:
+            type: object
+        requestEventsGetMostRecentEvent:
+            type: object
+        requestProjectsCreateProject:
+            type: object
+            properties:
+                project:
+                    oneOf:
+                        - $ref: '#/components/schemas/v1.CreateProjectRequest'
+                        - nullable: true
+            description: Создать новый проект
+        requestProjectsDeleteProjectByID:
+            type: object
+        requestProjectsGetProjectByID:
+            type: object
+        requestProjectsGetProjects:
+            type: object
+        requestProjectsUpdateProject:
+            type: object
+            properties:
+                project:
+                    oneOf:
+                        - $ref: '#/components/schemas/v1.UpdateProjectRequest'
+                        - nullable: true
+            description: Обновить проект
+        requestRulesCreateRule:
+            type: object
+            properties:
+                request:
+                    $ref: '#/components/schemas/v1.CreateRuleRequest'
+            description: Создать правило
+        requestRulesDeleteRuleByID:
+            type: object
+            properties:
+                req:
+                    $ref: '#/components/schemas/v1.DeleteRuleRequest'
+            description: Удалить правило по id
+        requestRulesGetAvailableRules:
+            type: object
+        requestRulesGetRuleByID:
+            type: object
+        requestRulesGetRules:
+            type: object
+        requestRulesUpdateRuleById:
+            type: object
+            properties:
+                request:
+                    $ref: '#/components/schemas/v1.UpdateRuleRequest'
+            description: Обновить правило
+        responseAppGetMe:
+            type: object
+            properties:
+                resp:
+                    $ref: '#/components/schemas/v1.MeResponse'
+            description: Возвращает информацию о текущем пользователе
+        responseEventsGetEventByID:
+            type: object
+            properties:
+                resp:
+                    $ref: '#/components/schemas/v1.EventDetailResponse'
+            description: Возвращает подробную информацию о событии по его ID
+        responseEventsGetEvents:
+            type: object
+            properties:
+                items:
+                    $ref: '#/components/schemas/v1.EventsResponse'
+            description: Возвращает список событий за указанный промежуток времени (параметр pastHours)
+        responseEventsGetEventsByType:
+            type: object
+            properties:
+                resp:
+                    $ref: '#/components/schemas/v1.EventsByEventTypeResponse'
+            description: Возвращает инфу об ивентах по типу
+        responseEventsGetMostRecentEvent:
+            type: object
+            properties:
+                resp:
+                    $ref: '#/components/schemas/v1.EventDetailResponse'
+            description: Возвращает подробную информацию о последнем событии по его eventType
+        responseProjectsCreateProject:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Создать новый проект
+        responseProjectsDeleteProjectByID:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Удалить проект по Id
+        responseProjectsGetProjectByID:
+            type: object
+            properties:
+                project:
+                    $ref: '#/components/schemas/v1.ProjectDetailResponse'
+            description: Возвращает подробную информацию о проекте по его ID
+        responseProjectsGetProjects:
+            type: object
+            properties:
+                items:
+                    $ref: '#/components/schemas/v1.ProjectsResponse'
+            description: Возвращает список проектов
+        responseProjectsUpdateProject:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Обновить проект
+        responseRulesCreateRule:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Создать правило
+        responseRulesDeleteRuleByID:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Удалить правило по id
+        responseRulesGetAvailableRules:
+            type: object
+            properties:
+                items:
+                    $ref: '#/components/schemas/v1.RulesResponse'
+            description: Возвращает подробную информацию о правиле по его ID
+        responseRulesGetRuleByID:
+            type: object
+            properties:
+                rule:
+                    oneOf:
+                        - $ref: '#/components/schemas/v1.RuleDetailResponse'
+                        - nullable: true
+            description: Возвращает подробную информацию о правиле по его ID
+        responseRulesGetRules:
+            type: object
+            properties:
+                items:
+                    $ref: '#/components/schemas/v1.RulesResponse'
+            description: Возвращает список правил
+        responseRulesUpdateRuleById:
+            type: object
+            properties:
+                status:
+                    type: boolean
+            description: Обновить правило
+        v1.Action:
+            type: object
+            properties:
+                params:
+                    type: object
+                    additionalProperties:
+                        type: string
+                type:
+                    type: string
+        v1.Condition:
+            type: object
+            properties:
+                field:
+                    type: string
+                operator:
+                    type: string
+                value:
+                    type: string
+        v1.CreateProjectRequest:
+            type: object
+            properties:
+                description:
+                    type: string
+                projectName:
+                    type: string
+                services:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.ServiceCreateRequest'
+                    nullable: true
+        v1.CreateRuleRequest:
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Action'
+                    nullable: true
+                description:
+                    type: string
+                name:
+                    type: string
+                root_node:
+                    $ref: '#/components/schemas/v1.Node'
+                ruleType:
+                    type: string
+        v1.DeleteRuleRequest:
+            type: object
+            properties:
+                ruleId:
+                    type: string
+                ruleType:
+                    type: string
+        v1.Event:
+            type: object
+            properties:
+                assignee:
+                    type: string
+                eventType:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+                eventsCount:
+                    type: number
+                    format: int
+                language:
+                    type: string
+                serviceName:
+                    type: string
+        v1.EventByType:
+            type: object
+            properties:
+                eventType:
+                    type: string
+                id:
+                    type: string
+                language:
+                    type: string
+                log:
+                    type: string
+                serviceName:
+                    type: string
+                timestamp:
+                    type: string
+                    format: date-time
+        v1.EventDetail:
+            type: object
+            properties:
+                eventType:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+                id:
+                    type: string
+                language:
+                    type: string
+                log:
+                    type: string
+                serviceName:
+                    type: string
+                timestamp:
+                    type: string
+                    format: date-time
+                usedActions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.UsedAction'
+                    nullable: true
+                usedRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.UsedRule'
+                    nullable: true
+        v1.EventDetailResponse:
+            type: object
+            properties:
+                event:
+                    oneOf:
+                        - $ref: '#/components/schemas/v1.EventDetail'
+                        - nullable: true
+        v1.EventsByEventTypeResponse:
+            type: object
+            properties:
+                events:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.EventByType'
+                    nullable: true
+        v1.EventsResponse:
+            type: object
+            properties:
+                events:
+                    type: array
+                    items:
+                        oneOf:
+                            - $ref: '#/components/schemas/v1.Event'
+                            - nullable: true
+                    nullable: true
+        v1.MeResponse:
+            type: object
+            properties:
+                username:
+                    type: string
+        v1.Node:
+            type: object
+            properties:
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Node'
+                    nullable: true
+                conditions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Condition'
+                    nullable: true
+                operator:
+                    type: string
+        v1.Project:
+            type: object
+            properties:
+                description:
+                    type: string
+                id:
+                    type: string
+                projectName:
+                    type: string
+        v1.ProjectDetail:
+            type: object
+            properties:
+                id:
+                    type: string
+                projectName:
+                    type: string
+                services:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Service'
+                    nullable: true
+        v1.ProjectDetailResponse:
+            type: object
+            properties:
+                project:
+                    oneOf:
+                        - $ref: '#/components/schemas/v1.ProjectDetail'
+                        - nullable: true
+        v1.ProjectsResponse:
+            type: object
+            properties:
+                projects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Project'
+                    nullable: true
+        v1.Rule:
+            type: object
+            properties:
+                description:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+                id:
+                    type: string
+                name:
+                    type: string
+                ruleType:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+        v1.RuleData:
+            type: object
+            properties:
+                ruleId:
+                    type: string
+                ruleName:
+                    type: string
+                ruleType:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+        v1.RuleDetailResponse:
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Action'
+                    nullable: true
+                description:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+                name:
+                    type: string
+                root_node:
+                    $ref: '#/components/schemas/v1.Node'
+                ruleType:
+                    oneOf:
+                        - type: string
+                        - nullable: true
+        v1.RulesResponse:
+            type: object
+            properties:
+                rules:
+                    type: array
+                    items:
+                        oneOf:
+                            - $ref: '#/components/schemas/v1.Rule'
+                            - nullable: true
+                    nullable: true
+        v1.Service:
+            type: object
+            properties:
+                errorRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.RuleData'
+                    nullable: true
+                events:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Event'
+                    nullable: true
+                resourceRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.RuleData'
+                    nullable: true
+                serviceName:
+                    type: string
+        v1.ServiceCreateRequest:
+            type: object
+            properties:
+                errorRules:
+                    type: array
+                    items:
+                        type: number
+                        format: int
+                    nullable: true
+                resourceRules:
+                    type: array
+                    items:
+                        type: number
+                        format: int
+                    nullable: true
+                serviceName:
+                    type: string
+        v1.UpdateProjectRequest:
+            type: object
+            properties:
+                description:
+                    type: string
+                projectId:
+                    type: string
+                projectName:
+                    type: string
+                services:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.ServiceCreateRequest'
+                    nullable: true
+        v1.UpdateRuleRequest:
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/v1.Action'
+                    nullable: true
+                description:
+                    type: string
+                name:
+                    type: string
+                root_node:
+                    $ref: '#/components/schemas/v1.Node'
+                ruleId:
+                    type: string
+                ruleType:
+                    type: string
+        v1.UsedAction:
+            type: object
+            properties:
+                params:
+                    $ref: '#/components/schemas/v1.UsedActionParams'
+                type:
+                    type: string
+        v1.UsedActionParams:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    type: string
+        v1.UsedRule:
+            type: object
+            properties:
+                rule_id:
+                    type: string
+                rule_name:
+                    type: string

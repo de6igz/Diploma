@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Critical in Payment Service",
+    "conditions": [
+      {
+        "field": "service_name",
+        "operator": "eq",
+        "value": "payment-service"
+      },
+      {
+        "field": "level",
+        "operator": "gte",
+        "value": "ERROR"
+      },
+      {
+        "field": "repeat_count",
+        "operator": "repeat_over",
+        "value": {
+          "threshold": 3,
+          "minutes": 1
+        }
+      }
+    ],
+    "actions": [
+      {
+        "type": "MAIL",
+        "params": {
+          "recipients": "devteam@company.com"
+        }
+      },
+      {
+        "type": "TELEGRAM",
+        "params": {
+          "channel": "alerts-team"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Discord for Dev",
+    "conditions": [
+      {
+        "field": "environment",
+        "operator": "eq",
+        "value": "dev"
+      }
+    ],
+    "actions": [
+      {
+        "type": "DISCORD"
+      }
+    ]
+  }
+]

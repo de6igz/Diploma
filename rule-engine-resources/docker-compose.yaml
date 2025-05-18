@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  rule-engine-resources:
+    build: .
+    container_name: rule-engine-resources
+    environment:
+      LOG_LEVEL: debug
+      LOG_FORMAT: human_read;
+
+
+      MONGO_DB: rule_engine_db
+      MONGO_HOST: host.docker.internal:27017
+      MONGO_PASSWORD: password
+      MONGO_USER: admin
+      MONGO_AUTH_SOURCE: admin
+
+      TIMESCALE_USER: testuser
+      TIMESCALE_PASSWORD: testpassword
+      TIMESCALE_HOST: host.docker.internal
+      TIMESCALE_DB: testdb_timescale
+      TIMESCALE_PORT: 5433
+
+
+
+      REDIS_ADDR: host.docker.internal:6379
+      REDIS_PASSWORD: redis-test
+      REDIS_DB: 0
+
+      KAFKA_BROKERS: kafka:29092
+      KAFKA_CONSUMER_GROUP: resource-rule-group
+      KAFKA_RESOURCE_TOPIC: kafka-resource-usage-topic
+    networks:
+      - aletheia_network
+
+
+
+networks:
+  aletheia_network:
+    external: true

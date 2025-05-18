@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  aletheia-public-api:
+    build:
+      context: .                     # идём на 2 уровня вверх (до корня)
+      dockerfile: docker/Dockerfile
+    container_name: aletheia-public-api
+    environment:
+      LOG_LEVEL: debug
+      LOG_FORMAT: human_read;
+
+
+      MONGO_DB: rule_engine_db
+      MONGO_HOST: host.docker.internal:27017
+      MONGO_PASSWORD: password
+      MONGO_USER: admin
+      MONGO_AUTH_SOURCE: admin
+
+      TIMESCALE_USER: aletheia
+      TIMESCALE_PASSWORD: data
+      TIMESCALE_HOST: 111.22.33.30
+      TIMESCALE_DB: testdb_timescale
+      TIMESCALE_PORT: 5433
+
+      POSTGRES_USER: aletheia
+      POSTGRES_PASSWORD: data
+      POSTGRES_HOST: 111.22.33.30
+      POSTGRES_DB: testdb
+      POSTGRES_PORT: 5432
+    ports:
+      - "8085:8085"
